@@ -1,1 +1,1 @@
-{"greeting":"Hello World!","interpolate":"Interpolate string here: %{string}."}
+{"greeting":"Hello World!","interpolate":"Interpolate string here: %{string}.","message_notification":{"zero":"You have no new messages.","one":"You have %{count} new message.","other":"You have %{count} new messages."}}

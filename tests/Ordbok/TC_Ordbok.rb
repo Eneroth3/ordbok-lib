@@ -117,14 +117,20 @@ class TC_Ordbok < TestUp::TestCase
 
     assert_equal("Hello World!", ob[:greeting])
 
+    # Using String key.
     assert_equal("Hello World!", ob["greeting"])
 
+    # Interpolate.
     assert_equal(
       "Interpolate string here: string.",
       ob[:interpolate, string: "string"]
     )
 
+    # Missing key.
     assert_equal("missing_key", ob[:missing_key])
+
+    # Using nested keys.
+    assert_equal("You have no new messages.", ob["message_notification.zero"])
   end
 
 end

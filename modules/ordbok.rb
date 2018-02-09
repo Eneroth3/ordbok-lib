@@ -81,6 +81,7 @@ class Ordbok
   # If key is missing, warn and return stringified key.
   #
   # @param key [Symbol]
+  # @param opts [Hash] Interpolation options. See Kernel.format for details.
   #
   # @example
   #   # (Assuming there is a resource directory with valid lang files)
@@ -98,12 +99,17 @@ class Ordbok
   #   OB[:interpolate, string: "Hello World!"]
   #   # => "Interpolate string here: Hello World!."
   #
+  #   # Keys can be nested, defining groups of related messages.
+  #   # For nested nested keys, use String with period as separator.
+  #   OB["message_notification.zero"]
+  #   # => "You have no new messages."
   #
   # @return [String]
-  def [](key, *options)
-    template = lookup(key.to_sym)
+  def [](key, opts = {})
+    count = opts[:count]
+    template = lookup(key, count)
     if template
-      format(template, *options)
+      format(template, opts)
     else
       warn "key #{key} is missing."
       key.to_s
@@ -142,10 +148,19 @@ class Ordbok
     nil
   end
 
-  def lookup(key)
-    # TODO: Do fancy lockup with nested keys and switch between zero, one and
-    # many based on count.
-    @dictionary[key]
+  def lookup(key, count = nil)
+    entry =
+      if key.is_a?(Symbol)
+        @dictionary[key]
+      elsif key.is_a?(String)
+        key.split(".").reduce(@dictionary) { |h, k| h.is_a?(Hash) && h[k.to_sym] }
+      end
+
+    # TODO: Pluralize if count is set and entry is a Hash...
+
+    raise KeyError, "key points to sub-Hash, not String: #{key}" if entry.is_a?(Hash)
+
+    entry
   end
 
   # Try setting the language.
