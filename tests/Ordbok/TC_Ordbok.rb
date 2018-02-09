@@ -131,6 +131,25 @@ class TC_Ordbok < TestUp::TestCase
 
     # Using nested keys.
     assert_equal("You have no new messages.", ob["message_notification.zero"])
+
+    # Pluralization.
+    assert_equal(
+      "You have no new messages.",
+      ob["message_notification", count: 0]
+    )
+    assert_equal(
+      "You have 1 new message.",
+      ob["message_notification", count: 1]
+    )
+    assert_equal(
+      "You have 77 new messages.",
+      ob["message_notification", count: 77]
+    )
+    # Pluralization with symbol key.
+    assert_equal(
+      "You have 77 new messages.",
+      ob[:message_notification, count: 77]
+    )
   end
 
 end

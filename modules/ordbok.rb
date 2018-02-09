@@ -82,6 +82,9 @@ class Ordbok
   #
   # @param key [Symbol]
   # @param opts [Hash] Interpolation options. See Kernel.format for details.
+  # @option opts :count [Fixnum] The count keyword is not only interpolated to
+  #   the string, but also used to select nested entry based on pluralization,
+  #   if available (see example).
   #
   # @example
   #   # (Assuming there is a resource directory with valid lang files)
@@ -103,6 +106,25 @@ class Ordbok
   #   # For nested nested keys, use String with period as separator.
   #   OB["message_notification.zero"]
   #   # => "You have no new messages."
+  #
+  #   # The :count keyword is not only interpolated to the String, but also
+  #   # used to select nested entry (if available). This allows you to
+  #   # specify separate strings with different pluralization.
+  #
+  #   # If the count is 0, the entry :zero is used if available.
+  #   # (Assuming "message_notification.zero" is "You have no new message.")
+  #   OB["message_notification", count: 0 ]
+  #   # => "You have no new messages."
+  #
+  #   # If the count is 1, the entry :one is used if available.
+  #   # (Assuming "message_notification.one" is "You have %{count} new message.")
+  #   OB["message_notification", count: 1 ]
+  #   # => "You have 1 new message."
+  #
+  #   # Otherwise the entry :other is used.
+  #   # (Assuming "message_notification.other" is "You have %{count} new messages.")
+  #   OB["message_notification", count: 7 ]
+  #   # => "You have 7 new messages."
   #
   # @return [String]
   def [](key, opts = {})
@@ -149,6 +171,8 @@ class Ordbok
   end
 
   def lookup(key, count = nil)
+    # TODO: Lower complexity.
+
     entry =
       if key.is_a?(Symbol)
         @dictionary[key]
@@ -156,11 +180,21 @@ class Ordbok
         key.split(".").reduce(@dictionary) { |h, k| h.is_a?(Hash) && h[k.to_sym] }
       end
 
-    # TODO: Pluralize if count is set and entry is a Hash...
+    entry = pluralize(entry, count) if entry.is_a?(Hash) && count
 
     raise KeyError, "key points to sub-Hash, not String: #{key}" if entry.is_a?(Hash)
 
     entry
+  end
+
+  def pluralize(hash, count)
+    return hash[:zero] if count == 0 && hash[:zero]
+
+    # TODO: These differs between languages. For now only English and languages
+    # with identical pluralization are supported.
+    return hash[:one] if count == 1 && hash[:one]
+
+    hash[:other]
   end
 
   # Try setting the language.
