@@ -1,9 +1,9 @@
 require 'testup/testcase'
-require_relative '../../modules/ordbok'
+require_relative '../../tools/loader'
 
 class TC_Ordbok < TestUp::TestCase
 
-  Ordbok = SkippyLib::Ordbok
+  Ordbok = OrdbokLib::Ordbok
 
   def setup
     # ...

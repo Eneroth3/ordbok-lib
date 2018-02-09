@@ -1,4 +1,5 @@
-module SkippyLib
+# Wrapping library module.
+module OrdbokLib
 
 # @example
 #   # In extension-dir/resources/en-US.lang
