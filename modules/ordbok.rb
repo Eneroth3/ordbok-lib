@@ -5,13 +5,13 @@ module OrdbokLib
 
 # @example
 #   # In extension-dir/resources/en-US.lang
-#   # {"greeting":"Hello World"}
+#   # {"greeting":"Hello World!"}
 #
 #   # In your extensions main file:
 #   require "extension-dir/ordbok"
 #   OB = Ordbok.new
 #   OB[:greeting]
-#   # => "Hello World"
+#   # => "Hello World!"
 class Ordbok
 
   # Initialize Ordbok object.
@@ -78,15 +78,25 @@ class Ordbok
   # Output localized string for key.
   #
   # Formats string according to additional parameters, if any.
+  # If key is missing, warn and return stringified key.
+  #
+  # @param key [Symbol]
   #
   # @example
   #   # (Assuming there is a resource directory with valid lang files)
   #   OB = Ordbok.new
-  #   OB[:greeting]
-  #   # => "Hello World"
   #
-  #   OB()
-  def translate(key, *options)
+  #   # (Assuming :greeting defined as "Hello World!")
+  #   OB[:greeting]
+  #   # => "Hello World!"
+  #
+  #   # (Assuming :interpolate defined as "Interpolate string here: %{string}.")
+  #   OB[:interpolate, string: "Hello World!"]
+  #   # => "Interpolate string here: Hello World!."
+  #
+  #
+  # @return [String]
+  def [](key, *options)
     template = lookup(key)
     if template
       format(template, *options)
@@ -95,8 +105,6 @@ class Ordbok
       key.to_s
     end
   end
-  alias :tr :translate
-  alias :[] :translate
 
   private
 

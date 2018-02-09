@@ -111,4 +111,18 @@ class TC_Ordbok < TestUp::TestCase
     refute(ob.lang_available?(:no), "Norwegian is not available.")
   end
 
+  def test_Operator_Get
+    dir = "#{__dir__}/TC_Ordbok/English-only"
+    ob = Ordbok.new(resource_dir: dir)
+
+    assert_equal("Hello World!", ob[:greeting])
+
+    assert_equal(
+      "Interpolate string here: string.",
+      ob[:interpolate, string: "string"]
+    )
+
+    assert_equal("missing_key", ob[:missing_key])
+  end
+
 end

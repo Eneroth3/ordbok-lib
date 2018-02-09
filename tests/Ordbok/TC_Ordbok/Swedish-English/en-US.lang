@@ -1,1 +1,1 @@
-{"greeting":"Hello World!"}
+{"greeting":"Hello World!","interpolate":"Interpolate string here: %{string}."}

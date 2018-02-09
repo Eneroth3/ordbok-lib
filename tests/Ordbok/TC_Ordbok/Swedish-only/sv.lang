@@ -1,1 +1,1 @@
-{"greeting":"Hej Världen!"}
+{"greeting":"Hej Världen!","interpolate":"Interpolera textsträng här: %{string}."}
