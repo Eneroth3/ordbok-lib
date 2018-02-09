@@ -24,6 +24,13 @@ defined on a per model basis in SketchUp. Decimal separator is defined on an OS
 level. And dates should frankly be written according to international standards,
 regardless of locale.
 
+TODO: Add license.
+TODO: Simplify and clarify readme. Include these key features:
+- Interpolation
+- descriptive keys, not English strings
+- String grouping
+- pluralization
+
 ## Install
 
 1. Copy from ``modules/`` into your extension's directory.
