@@ -1,19 +1,40 @@
 # Ordbok
 
-Ordbok, Swedish for dictionary ("wordbook"), is a Ruby library for localisation.
+Ordbok, Swedish for dictionary (literally "wordbook"), is a Ruby library for
+localisation of SketchUp extensions.
 
-The library is specifically designed to be used for SketchUp extensions.
-This means scopes, namespaces and loading differs from other Ruby envirements.
-In SketchUp all loaded extension run in the same envirement, with modules
-wrapping them to avoid name collision. This library is designed to live
-within such a module and not be shared between extensions, as different
-extensions may require different versions of the library.
+As numerous SketchUp extensions can run in the same environment, outside of the
+developers control, Ordbok is designed to run differently than e.g. rails/l18n.
+Ordbok is designed to be defined by each extensions using it, within the
+extensions's own namespace, and be loaded from inside of the extensions's own
+directory.
 
-Keys are descriptive symbols rather than exact strings for more readable source code,
-less risk of errors (harder to misspell or forget a word) and to not mix up different
-phrases that merely happens to spell out the same in the original language, e.g.
-"Group" (verb) and "Group" (noun), or "Extension" (software) or "Extension"
-(lines rendered longer than their actual size).
+This prevents any possible issues of different extensions requiring different
+versions of the library, and lets the end user use the extensions without having
+to handle dependencies manually.
 
-Ordbok focuses on languages, not units, date formats or the like. Units is defined
-on a per model basis. Dates should be written according to international standards.
+Ordbok is designed to look up strings using descriptive keys, rather than
+the original English phrases, to prevent errors due to misspelling or different
+phrasing and to allow for completely different phrases to spell out as the same
+string without being mixed up in translation (e.g. the verb 'group' and noun
+'group').
+
+Ordbok focuses on languages, not units, date formats or the like. Units are
+defined on a per model basis in SketchUp. Decimal separator is defined on an OS
+level. And dates should frankly be written according to international standards,
+regardless of locale.
+
+## Install
+
+1. Copy from ´modules/´ into your extension's directory.
+2. Replace the wrapping ´OrdbolLib´ module with the wrapping module of your
+extension.
+3. Require the script(s) from your own extension.
+
+## Usage
+
+It is recommended to create an Ordbok object when the extension loads, and
+assign it to a constant. This way the object can be easily referenced in nested
+modules and classes in your extension.
+
+TODO: Write more, or refer to individual methods' documentation.
