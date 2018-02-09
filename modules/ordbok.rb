@@ -28,15 +28,12 @@ class Ordbok
   #
   # @raise [LoadError] if no lang files exists in resource_dir.
   def initialize(opts = {})
-    @resource_dir = opts[:resource_dir] || File.join(local_dir, "resources")
+    @resource_dir = opts[:resource_dir] || default_resource_dir
     raise LoadError, "No .lang files found in #{@resource_dir}." if available_langs.empty?
 
-    opts[:lang] && try_set_lang(opts[:lang].to_sym) ||
-      try_set_lang(Sketchup.os_language.to_sym) ||
-      try_set_lang(:"en-US") ||
-      try_set_lang(available_langs.first)
-
-    load_lang_file
+    lang_queue = default_lang_queue
+    lang_queue.unshift(opts[:lang].to_sym) if opts[:lang]
+    try_set_lang(lang_queue)
   end
 
   # Returns the code of the currently used language.
@@ -78,6 +75,18 @@ class Ordbok
 
   private
 
+  def default_lang_queue
+    [
+      Sketchup.os_language.to_sym,
+      :"en-US",
+      available_langs.first
+    ]
+  end
+
+  def default_resource_dir
+    File.join(local_dir, "resources")
+  end
+
   def lang_path(lang = @lang)
     File.join(@resource_dir, "#{lang}.lang")
   end
@@ -94,18 +103,22 @@ class Ordbok
     warn "Not yet implemented"
   end
 
-  # Set language to lang if it can be found. Otherwise keep the current
-  # language. Does NOT load the language file.
+  # Try setting the language.
   #
-  # @param lang [Symbol]
+  # @param langs [Array<Symbol>, Symbol]
   #
   # @return [Symbol, nil] lang code on success.
-  def try_set_lang(lang)
-    return nil unless lang_available?(lang)
-    # TODO: Fall back to similar lang?
-    @lang = lang
+  def try_set_lang(langs)
+    langs = [langs] unless langs.is_a?(Array)
 
-    lang
+    langs.each do |lang|
+      next unless lang_available?(lang)
+      @lang = lang
+      load_lang_file
+      return lang
+    end
+
+    nil
   end
 
 end
