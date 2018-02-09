@@ -23,15 +23,15 @@ class Ordbok
   # @param opts [Hash] Options for Ordbok object.
   # @option opts :resource_dir [String] Path to directory containing language
   #   files (defaults to "resources", relative to where Ordbok is defined).
-  # @option opts :lang_code [Symbol] The language to use
-  #   (defaults to what SketchUp uses).
+  # @option opts :lang [Symbol] The language to use
+  #   (defaults to what SketchUp uses, en-US, or whatever language is found).
   #
-  # @raise [LoadError] if resource_dir is missing.
+  # @raise [LoadError] if no lang files exists in resource_dir.
   def initialize(opts = {})
     @resource_dir = opts[:resource_dir] || File.join(local_dir, "resources")
     raise LoadError, "No .lang files found in #{@resource_dir}." if available_langs.empty?
 
-    opts[:lang_code] && try_set_lang(opts[:lang_code].to_sym) ||
+    opts[:lang] && try_set_lang(opts[:lang].to_sym) ||
       try_set_lang(Sketchup.os_language.to_sym) ||
       try_set_lang(:"en-US") ||
       try_set_lang(available_langs.first)
@@ -55,32 +55,31 @@ class Ordbok
 
   # Set language.
   #
-  # @param lang_code [Symbol]
+  # @param lang [Symbol]
   #
   # @raise [ArgumentError] If the language is unavailable.
-  def lang=(lang_code)
-    unless lang_available?(lang_code)
-      raise ArgumentError, "Language unavailable does file exist? #{lang_path(lang_code)}"
+  def lang=(lang)
+    unless lang_available?(lang)
+      raise ArgumentError, "Language unavailable does file exist? #{lang_path(lang)}"
     end
 
-    @lang = lang_code.to_sym
+    @lang = lang.to_sym
     load_lang_file
   end
 
   # Check if a specific language is available.
   #
-  # @param lang_code [Symbol]
+  # @param lang [Symbol]
   #
   # @return [Boolean]
-  def lang_available?(lang_code)
-    File.exist?(lang_path(lang_code))
+  def lang_available?(lang)
+    File.exist?(lang_path(lang))
   end
 
   private
 
-  # Path to lang file.
-  def lang_path(lang_code = @lang)
-    File.join(@resource_dir, "#{lang_code}.lang")
+  def lang_path(lang = @lang)
+    File.join(@resource_dir, "#{lang}.lang")
   end
 
   def local_dir
@@ -95,18 +94,18 @@ class Ordbok
     warn "Not yet implemented"
   end
 
-  # Set language to lang_code if it can be found. Otherwise keep the current
+  # Set language to lang if it can be found. Otherwise keep the current
   # language. Does NOT load the language file.
   #
-  # @param lang_code [Symbol]
+  # @param lang [Symbol]
   #
-  # @return [Symbol, nil] lang_code on success.
-  def try_set_lang(lang_code)
-    return nil unless lang_available?(lang_code)
+  # @return [Symbol, nil] lang code on success.
+  def try_set_lang(lang)
+    return nil unless lang_available?(lang)
     # TODO: Fall back to similar lang?
-    @lang = lang_code
+    @lang = lang
 
-    lang_code
+    lang
   end
 
 end
