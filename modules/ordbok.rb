@@ -1,14 +1,16 @@
+require "json"
+
 # Wrapping library module.
 module OrdbokLib
 
 # @example
 #   # In extension-dir/resources/en-US.lang
-#   # {hello: "Hello World"}
+#   # {"greeting":"Hello World"}
 #
 #   # In your extensions main file:
 #   require "extension-dir/ordbok"
 #   OB = Ordbok.new
-#   OB.tr(:hello)
+#   OB[:greeting]
 #   # => "Hello World"
 class Ordbok
 
@@ -73,6 +75,29 @@ class Ordbok
     File.exist?(lang_path(lang))
   end
 
+  # Output localized string for key.
+  #
+  # Formats string according to additional parameters, if any.
+  #
+  # @example
+  #   # (Assuming there is a resource directory with valid lang files)
+  #   OB = Ordbok.new
+  #   OB[:greeting]
+  #   # => "Hello World"
+  #
+  #   OB()
+  def translate(key, *options)
+    template = lookup(key)
+    if template
+      format(template, *options)
+    else
+      warn "key #{key} is missing."
+      key.to_s
+    end
+  end
+  alias :tr :translate
+  alias :[] :translate
+
   private
 
   def default_lang_queue
@@ -99,8 +124,16 @@ class Ordbok
   end
 
   def load_lang_file
-    # TODO: Load lang file. Parse it. Save hash.
-    warn "Not yet implemented"
+    file_content = File.read(lang_path)
+    @dictionary = JSON.parse(file_content, symbolize_names: true)
+
+    nil
+  end
+
+  def lookup(key)
+    # TODO: Do fancy lockup with nested keys and switch between zero, one and
+    # many based on count.
+    @dictionary[key]
   end
 
   # Try setting the language.
