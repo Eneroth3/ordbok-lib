@@ -1,12 +1,12 @@
 # Ordbok
 
 Ordbok, Swedish for dictionary (literally "wordbook"), is a Ruby library for
-localisation of SketchUp extensions.
+localization of SketchUp extensions.
 
 As numerous SketchUp extensions can run in the same environment, outside of the
 developers control, Ordbok is designed to run differently than e.g. rails/l18n.
 Ordbok is designed to be defined by each extensions using it, within the
-extensions's own namespace, and be loaded from inside of the extensions's own
+extension's own namespace, and be loaded from inside of the extension's own
 directory.
 
 This prevents any possible issues of different extensions requiring different
@@ -26,15 +26,11 @@ regardless of locale.
 
 ## Install
 
-1. Copy from ´modules/´ into your extension's directory.
-2. Replace the wrapping ´OrdbolLib´ module with the wrapping module of your
+1. Copy from ``modules/`` into your extension's directory.
+2. Replace the wrapping ``OrdbolLib`` module with the wrapping module of your
 extension.
 3. Require the script(s) from your own extension.
 
 ## Usage
 
-It is recommended to create an Ordbok object when the extension loads, and
-assign it to a constant. This way the object can be easily referenced in nested
-modules and classes in your extension.
-
-TODO: Write more, or refer to individual methods' documentation.
+See documentation class and method documentation for Ordbok.
