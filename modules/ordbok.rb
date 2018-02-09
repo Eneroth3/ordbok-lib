@@ -90,6 +90,10 @@ class Ordbok
   #   OB[:greeting]
   #   # => "Hello World!"
   #
+  #   # Key can be String too.
+  #   OB["greeting"]
+  #   # => "Hello World!"
+  #
   #   # (Assuming :interpolate defined as "Interpolate string here: %{string}.")
   #   OB[:interpolate, string: "Hello World!"]
   #   # => "Interpolate string here: Hello World!."
@@ -97,7 +101,7 @@ class Ordbok
   #
   # @return [String]
   def [](key, *options)
-    template = lookup(key)
+    template = lookup(key.to_sym)
     if template
       format(template, *options)
     else

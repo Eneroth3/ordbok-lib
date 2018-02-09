@@ -117,6 +117,8 @@ class TC_Ordbok < TestUp::TestCase
 
     assert_equal("Hello World!", ob[:greeting])
 
+    assert_equal("Hello World!", ob["greeting"])
+
     assert_equal(
       "Interpolate string here: string.",
       ob[:interpolate, string: "string"]
