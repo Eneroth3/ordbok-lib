@@ -33,9 +33,7 @@ class Ordbok
     @resource_dir = opts[:resource_dir] || default_resource_dir
     raise LoadError, "No .lang files found in #{@resource_dir}." if available_langs.empty?
 
-    lang_queue = default_lang_queue
-    lang_queue.unshift(opts[:lang].to_sym) if opts[:lang]
-    try_set_lang(lang_queue)
+    try_set_lang(lang_load_queue(opts[:lang] && opts[:lang].to_sym))
   end
 
   # Returns the code of the currently used language.
@@ -140,12 +138,20 @@ class Ordbok
 
   private
 
-  def default_lang_queue
-    [
+  # List of languages to to try loading, in the order they should be tried.
+  #
+  # @param lang [Symbol, nil] Optional language to try first.
+  #
+  # @return [Array]
+  def lang_load_queue(lang = nil)
+    queue = [
       Sketchup.os_language.to_sym,
       :"en-US",
       available_langs.first
     ]
+    queue.unshift(lang) if lang
+
+    queue
   end
 
   def default_resource_dir
