@@ -152,6 +152,16 @@ class Ordbok
     File.join(local_dir, "resources")
   end
 
+  # Find value in nested hash using array of keys.
+  #
+  # @param hash [Hash]
+  # @param keys [Arraty]
+  #
+  # @return value or nil if missing.
+  def hash_lookup_by_key_array(hash, keys)
+    keys.reduce(hash) { |h, k| h.is_a?(Hash) && h[k.to_sym] || nil }
+  end
+
   def lang_path(lang = @lang)
     File.join(@resource_dir, "#{lang}.lang")
   end
@@ -171,13 +181,11 @@ class Ordbok
   end
 
   def lookup(key, count = nil)
-    # TODO: Lower complexity.
-
     entry =
       if key.is_a?(Symbol)
         @dictionary[key]
       elsif key.is_a?(String)
-        key.split(".").reduce(@dictionary) { |h, k| h.is_a?(Hash) && h[k.to_sym] }
+        hash_lookup_by_key_array(@dictionary, key.split("."))
       end
 
     entry = pluralize(entry, count) if entry.is_a?(Hash) && count
@@ -188,7 +196,7 @@ class Ordbok
   end
 
   def pluralize(hash, count)
-    return hash[:zero] if count == 0 && hash[:zero]
+    return hash[:zero] if count.zero? && hash[:zero]
 
     # TODO: These differs between languages. For now only English and languages
     # with identical pluralization are supported.
