@@ -1,8 +1,11 @@
 require "json"
 
-# Wrapping library module.
+# Wrapping module. On install to your own extension, replace this with the
+# namespace of the extension.
 module OrdbokLib
 
+# Ordbok localization library for SketchUp extensions.
+#
 # @example
 #   # In extension-dir/resources/en-US.lang
 #   # {"greeting":"Hello World!"}
@@ -154,6 +157,9 @@ class Ordbok
     queue
   end
 
+  # Default directory to look for translations in.
+  #
+  # @return [String]
   def default_resource_dir
     File.join(local_dir, "resources")
   end
@@ -168,17 +174,32 @@ class Ordbok
     keys.reduce(hash) { |h, k| h.is_a?(Hash) && h[k.to_sym] || nil }
   end
 
+  # Path to a specific lang file.
+  #
+  # @param lang [Symbol
+  #
+  # @return [String]
   def lang_path(lang = @lang)
     File.join(@resource_dir, "#{lang}.lang")
   end
 
+  # The directory Orbok is loaded from.
+  #
+  # @return [String]
   def local_dir
     dir = __dir__
+
+    # Ruby doesn't apply the right encoding on Windows.
+    # This could cause load issues for users with non-English characters in
+    # their home folder path.
     dir.force_encoding("UTF-8") if dir.respond_to?(:force_encoding)
 
     dir
   end
 
+  # Loads the lang file containing the translation table.
+  #
+  # @return [Void]
   def load_lang_file
     file_content = File.read(lang_path)
     @dictionary = JSON.parse(file_content, symbolize_names: true)
@@ -186,6 +207,15 @@ class Ordbok
     nil
   end
 
+  # Look up an entry in the translation table.
+  #
+  # @param key [Symbol, String]
+  # @param count [nil, Object]
+  #
+  # @raise [KeyError] If key points to a nested Hash, not a String, and count
+  #   isn't specified as a Numeric.
+  #
+  # @return [String, nil]
   def lookup(key, count = nil)
     entry =
       if key.is_a?(Symbol)
@@ -194,21 +224,37 @@ class Ordbok
         hash_lookup_by_key_array(@dictionary, key.split("."))
       end
 
-    entry = pluralize(entry, count) if entry.is_a?(Hash) && count
+    entry = pluralize(entry, count) if entry.is_a?(Hash) && count.is_a?(Numeric)
 
     raise KeyError, "key points to sub-Hash, not String: #{key}" if entry.is_a?(Hash)
 
     entry
   end
 
-  def pluralize(hash, count)
-    return hash[:zero] if count.zero? && hash[:zero]
+  # Find sub-entry depending on count and pluralization rules.
+  #
+  # @param entry [Hash]
+  # @param count [Numeric]
+  #
+  # @return [String, nil]
+  def pluralize(entry, count)
+    # If count is 0 and a phrase for the count 0 is specified, use it regardless
+    # of pluralization rules.
+    # Eben in languages where zero isn't different strictly grammatically, it is
+    # practical with the ability to assign a separate phrase, e.g.
+    # "You have no new messages", rather than "You have 0 new messages".
+    return entry[:zero] if count.zero? && entry[:zero]
 
-    # TODO: These differs between languages. For now only English and languages
-    # with identical pluralization are supported.
-    return hash[:one] if count == 1 && hash[:one]
+    # TODO: These rules differs between languages. For now only English and
+    # languages with identical pluralization are fully supported.
+    #
+    # Other rules could perhaps be specified inside the lang files?
+    #
+    # Pluralization specification for various languages:
+    # http://www.unicode.org/cldr/charts/29/supplemental/language_plural_rules.html
+    return entry[:one] if count == 1 && entry[:one]
 
-    hash[:other]
+    entry[:other]
   end
 
   # Try setting the language.

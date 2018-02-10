@@ -3,41 +3,48 @@
 Ordbok, Swedish for dictionary (literally "wordbook"), is a Ruby library for
 localization of SketchUp extensions.
 
-As numerous SketchUp extensions can run in the same environment, outside of the
-developers control, Ordbok is designed to run differently than e.g. rails/l18n.
-Ordbok is designed to be defined by each extensions using it, within the
-extension's own namespace, and be loaded from inside of the extension's own
+Due to the architecture of SketchUp extensions this library is designed
+differently than libraries not meant for SketchUp, e.g. rails/l18n.
+As numerous SketchUp extensions run in the same environment, outside of the
+developer's control, all code used by an extension (with some exceptions like the
+Standard Lib) are supposed to be defined inside the namespace (wrapping module)
+of that extension, and be loaded from within that extension's own support
 directory.
 
-This prevents any possible issues of different extensions requiring different
-versions of the library, and lets the end user use the extensions without having
-to handle dependencies manually.
+Some features/concepts that makes Ordbok different from other SketchUp
+extension localization libraries, such as TT_Lib2's Babelfish or the shipped
+LangHandler, are:
 
-Ordbok is designed to look up strings using descriptive keys, rather than
-the original English phrases, to prevent errors due to misspelling or different
-phrasing and to allow for completely different phrases to spell out as the same
-string without being mixed up in translation (e.g. the verb 'group' and noun
-'group').
+- String Interpolation (supported by Babelfish but not LangHandler)
+    - Variables, such as the number of missing files in an error message, can be
+    written inside the sentence.
+- Descriptive Keys, not English Phrases
+    - Less risk of mixing up phrases that happens be homonyms in the original
+    language, e.g. the verb Group and the noun Group or Extension (software) and
+    Extension (edge style).
+    - Allows to specify when the exact same phrase is indeed intended to be
+    reused elsewhere, e.g. using the same tool name in both a toolbar and a
+    menu.
+    - Allows to adjust the original phrase, e.g. correct spelling, without having
+    to update the translation tables.
+    - Allows for shorter, more readable code when not long sentences need
+    to be spelled out.
+- Phrase Grouping
+    - Organize phrases by what part of the extension use them, or their meaning.
+- Pluralization
+    - Specify different phrases for singulars and plurals.
 
-Ordbok focuses on languages, not units, date formats or the like. Units are
-defined on a per model basis in SketchUp. Decimal separator is defined on an OS
-level. And dates should frankly be written according to international standards,
-regardless of locale.
-
-TODO: Add license.
-TODO: Simplify and clarify readme. Include these key features:
-- Interpolation
-- descriptive keys, not English strings
-- String grouping
-- pluralization
 
 ## Install
 
-1. Copy from ``modules/`` into your extension's directory.
+1. Copy files from ``modules/`` into your extension's directory.
 2. Replace the wrapping ``OrdbolLib`` module with the wrapping module of your
 extension.
 3. Require the script(s) from your own extension.
 
 ## Usage
 
-See documentation class and method documentation for Ordbok.
+See class and method documentation for Ordbok.
+
+TODO: Document how translation tables are saved (for now as JSON files, but that
+could change).
