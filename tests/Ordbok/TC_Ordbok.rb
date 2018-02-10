@@ -150,6 +150,14 @@ class TC_Ordbok < TestUp::TestCase
       "You have 77 new messages.",
       ob[:message_notification, count: 77]
     )
+    # Don't append pluralization to lookup path if it point to String already.
+    # The user of the library should be able to use :count as any other
+    # variable, without specialized lookup when the template string should
+    # remain the same and :count just happens to be the most descriptive name.
+    assert_equal(
+      "You have 77 new messages.",
+      ob["message_notification.other", count: 77]
+    )
   end
 
 end
