@@ -26,13 +26,15 @@ class Ordbok
   #   OB = Ordbok.new
   #
   # @param opts [Hash] Options for Ordbok object.
-  # @option opts :resource_dir [String] Path to directory containing language
-  #   files (defaults to "resources", relative to where Ordbok is defined).
+  # @option opts :resource_dir [String] Absolute path to directory containing
+  #   language files (defaults to "resources", relative to where Ordbok.new is
+  #   called).
   # @option opts :lang [Symbol] The language to use
   #   (defaults to what SketchUp uses, en-US, or whatever language is found).
   #
   # @raise [LoadError] if no lang files exists in resource_dir.
   def initialize(opts = {})
+    @caller_path = caller_locations.first.path
     @resource_dir = opts[:resource_dir] || default_resource_dir
     raise LoadError, "No .lang files found in #{@resource_dir}." if available_langs.empty?
 
@@ -161,7 +163,7 @@ class Ordbok
   #
   # @return [String]
   def default_resource_dir
-    File.join(local_dir, "resources")
+    File.join(File.dirname(@caller_path), "resources")
   end
 
   # Find value in nested hash using array of keys.
@@ -181,20 +183,6 @@ class Ordbok
   # @return [String]
   def lang_path(lang = @lang)
     File.join(@resource_dir, "#{lang}.lang")
-  end
-
-  # The directory Orbok is loaded from.
-  #
-  # @return [String]
-  def local_dir
-    dir = __dir__
-
-    # Ruby doesn't apply the right encoding on Windows.
-    # This could cause load issues for users with non-English characters in
-    # their home folder path.
-    dir.force_encoding("UTF-8") if dir.respond_to?(:force_encoding)
-
-    dir
   end
 
   # Loads the lang file containing the translation table.

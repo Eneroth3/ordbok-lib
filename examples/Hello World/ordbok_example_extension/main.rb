@@ -16,7 +16,7 @@ module OrdbokExample
 
   # Create Ordbok object and assign it to a constant as constants can be easily
   # referenced inside nested modules and classes.
-  OB = Ordbok.new(resource_dir: File.join(PLUGIN_DIR, "resources"))
+  OB = Ordbok.new
 
   # This simple extension merely uses the language of SketchUp, and falls back
   # to English if it's missing.
