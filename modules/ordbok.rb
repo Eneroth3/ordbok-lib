@@ -29,14 +29,24 @@ class Ordbok
   # @option opts :resource_dir [String] Absolute path to directory containing
   #   language files (defaults to "resources", relative to where Ordbok.new is
   #   called).
+  # @option opts :remember_lang [Boolean] Save language set by #lang= and use
+  #   same language next time an Ordbok object is created with the same
+  #   pref_key (defaults to false).
+  # @option opts :pref_key [Symbol] Key to save language setting to, if
+  #   remember_lang is true (defaults to unique key for each extension, based on
+  #   parent module names).
   # @option opts :lang [Symbol] The language to use
-  #   (defaults to what SketchUp uses, en-US, or whatever language is found).
+  #   (defaults to saved preference from previous session (if any and
+  #   remember_lang is true), what the current SketchUp session uses, en-US,
+  #   or whatever language is found, in this order).
   #
   # @raise [LoadError] if no lang files exists in resource_dir.
   def initialize(opts = {})
     @caller_path = caller_locations.first.path
-    @resource_dir = opts[:resource_dir] || default_resource_dir
+    @resource_dir = opts.fetch(:resource_dir, default_resource_dir)
     raise LoadError, "No .lang files found in #{@resource_dir}." if available_langs.empty?
+    @remember_lang = opts.fetch(:remember_lang, false)
+    @pref_key = opts.fetch(:pref_key, default_pref_key)
 
     try_set_lang(lang_load_queue(opts[:lang] && opts[:lang].to_sym))
   end
@@ -45,6 +55,22 @@ class Ordbok
   #
   # @return [Symbol]
   attr_reader :lang
+
+  # @overload remember_lang
+  #   Get whether the chosen language should be restored in next session.
+  #   @return [Boolean]
+  # @overload remember_lang=(value)
+  #   Set whether the chosen language should be restored in next session.
+  #   @param value [Boolean]
+  attr_accessor :remember_lang
+
+  # @overload pref_key
+  #   Get the key by witch the language preference is stored between sessions.
+  #   @return [Symbol]
+  # @overload pref_key=(value)
+  #   Set the key by witch the language preference is stored between sessions.
+  #   @param value [Symbol]
+  attr_accessor :pref_key
 
   # List the available languages in the resources directory.
   #
@@ -61,12 +87,16 @@ class Ordbok
   #
   # @raise [ArgumentError] If the language is unavailable.
   def lang=(lang)
+    # TODO: Should lang == nil reset to SU lang and save as nil?
+
     unless lang_available?(lang)
       raise ArgumentError, "Language unavailable does file exist? #{lang_path(lang)}"
     end
 
     @lang = lang.to_sym
     load_lang_file
+
+    Sketchup.write_default(@pref_key.to_s, "lang", @lang.to_s) if @remember_lang
   end
 
   # Check if a specific language is available.
@@ -141,6 +171,32 @@ class Ordbok
     end
   end
 
+  # Create menu items for use to select language.
+  #
+  # @param men [Sketchup::Menu]
+  #
+  # @example
+  #   OB = Ordbok.new(remember_lang: true)
+  #   menu = UI.menu("Plugins").add_submenu("My Extension").add_submenu("Language")
+  #   OB.options_menu(menu)
+  #
+  # @return [Void]
+  def options_menu(menu)
+    # TODO: Have item for default language (SketchUp Language) followed by a
+    # separator.
+    # Should ideally call lang= with nil as argument, and have that erase the
+    # saved lang option.
+
+    available_langs.sort.each do |lang|
+      # TODO: Perhaps use language name set in language file, or localize Ordbok
+      # itself with language names, rather than use ISO codes?
+      item = menu.add_item(lang.to_s) { self.lang = lang }
+      menu.set_validation_proc(item) { self.lang == lang ? MF_CHECKED : MF_UNCHECKED }
+    end
+
+    nil
+  end
+
   private
 
   # List of languages to to try loading, in the order they should be tried.
@@ -154,6 +210,12 @@ class Ordbok
       :"en-US",
       available_langs.first
     ]
+
+    if @remember_lang
+      remembered_lang = Sketchup.read_default(@pref_key.to_s, "lang")
+      queue.unshift(remembered_lang.to_sym) if remembered_lang
+    end
+
     queue.unshift(lang) if lang
 
     queue
@@ -164,6 +226,15 @@ class Ordbok
   # @return [String]
   def default_resource_dir
     File.join(File.dirname(@caller_path), "resources")
+  end
+
+  # Generate a key by witch to save language preference.
+  # Based on parent module names, e.g. Eneroth::AwesomeExtension ->
+  # :Eneroth_AeseomeExtension_Orbok.
+  #
+  # @return [Symbol]
+  def default_pref_key
+    self.class.name.gsub("::", "_")
   end
 
   # Find value in nested hash using array of keys.

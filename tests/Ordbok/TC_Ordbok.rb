@@ -70,6 +70,46 @@ class TC_Ordbok < TestUp::TestCase
     assert_equal(:sv, ob.lang)
   end
 
+  def test_initialize_Remember_lang
+    # Language preference is optionally saved between sessions on a per
+    # extension basis.
+
+    dir = "#{__dir__}/TC_Ordbok/Swedish-Danish-English"
+    su_lang = Sketchup.os_language.to_sym
+
+    ob = Ordbok.new(resource_dir: dir, remember_lang: true)
+    # No reason to test language here. Depends on last test, if any, or SU
+    # language.
+
+    ob.lang = :sv
+    ob = Ordbok.new(resource_dir: dir, remember_lang: true)
+    assert_equal(:sv, ob.lang)
+
+    ob.lang = :da
+    ob = Ordbok.new(resource_dir: dir, remember_lang: true)
+    assert_equal(:da, ob.lang)
+
+    # When remember_lang isn't specified as true, the language from last session
+    # should not be restored.
+    # (Assume SketchUp isn't running in Danish here)
+    ob = Ordbok.new(resource_dir: dir)
+    expected = (su_lang == :sv && :sv || su_lang == :da && :da|| :"en-US")
+    assert_equal(expected, ob.lang)
+
+    # Different extensions should not interfere with each others.
+
+    ob1 = Ordbok.new(resource_dir: dir, remember_lang: true, pref_key: :ordbok_test1)
+    ob2 = Ordbok.new(resource_dir: dir, remember_lang: true, pref_key: :ordbok_test2)
+    ob1.lang = :da
+    ob2.lang = :sv
+
+    ob1 = Ordbok.new(resource_dir: dir, remember_lang: true, pref_key: :ordbok_test1)
+    ob2 = Ordbok.new(resource_dir: dir, remember_lang: true, pref_key: :ordbok_test2)
+    assert_equal(:da, ob1.lang)
+    assert_equal(:sv, ob2.lang)
+
+  end
+
   def test_available_langs
     dir = "#{__dir__}/TC_Ordbok/English-only"
     ob = Ordbok.new(resource_dir: dir)
@@ -160,4 +200,13 @@ class TC_Ordbok < TestUp::TestCase
     )
   end
 
+  def test_options_menu
+    dir = "#{__dir__}/TC_Ordbok/Swedish-Danish-English"
+    ob = Ordbok.new(resource_dir: dir, remember_lang: true)
+
+    menu = UI.menu("Plugins").add_submenu("Ordbok Test").add_submenu("Language")
+    ob.options_menu(menu)
+
+    skip("Can't automate checking whether menu appeared (Extensions > Ordbok Test > Language).")
+  end
 end
