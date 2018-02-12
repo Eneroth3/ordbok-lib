@@ -78,7 +78,8 @@ class Ordbok
   #
   # @return [Array<Symbol>]
   def available_langs
-    Dir.glob("#{@resource_dir}/*.lang").map { |p| File.basename(p, ".*").to_sym }
+    pattern = "#{@resource_dir.tr("\\", "/")}/*.lang"
+    Dir.glob(pattern).map { |p| File.basename(p, ".*").to_sym }
   end
 
   # Set language.
