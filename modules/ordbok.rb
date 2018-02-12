@@ -82,6 +82,10 @@ class Ordbok
     Dir.glob(pattern).map { |p| File.basename(p, ".*").to_sym }
   end
 
+  def inspect
+    "#<#{self.class.name}:#{self.object_id} (#{lang})>"
+  end
+
   # Set language.
   #
   # @param lang [Symbol]
