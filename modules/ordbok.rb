@@ -171,6 +171,32 @@ class Ordbok
     end
   end
 
+  # Create menu items for use to select language.
+  #
+  # @param men [Sketchup::Menu]
+  #
+  # @example
+  #   OB = Ordbok.new(remember_lang: true)
+  #   menu = UI.menu("Plugins").add_submenu("My Extension").add_submenu("Language")
+  #   OB.options_menu(menu)
+  #
+  # @return [Void]
+  def options_menu(menu)
+    # TODO: Have item for default language (SketchUp Language) followed by a
+    # separator.
+    # Should ideally call lang= with nil as argument, and have that erase the
+    # saved lang option.
+
+    available_langs.sort.each do |lang|
+      # TODO: Perhaps use language name set in language file, or localize Ordbok
+      # itself with language names, rather than use ISO codes?
+      item = menu.add_item(lang.to_s) { self.lang = lang }
+      menu.set_validation_proc(item) { self.lang == lang ? MF_CHECKED : MF_UNCHECKED }
+    end
+
+    nil
+  end
+
   private
 
   # List of languages to to try loading, in the order they should be tried.
