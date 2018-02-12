@@ -120,7 +120,7 @@ class Ordbok
   #
   # @param key [Symbol]
   # @param opts [Hash] Interpolation options. See Kernel.format for details.
-  # @option opts :count [Fixnum] The count keyword is not only interpolated to
+  # @option opts :count [Numeric] The count keyword is not only interpolated to
   #   the string, but also used to select nested entry based on pluralization,
   #   if available (see example).
   #
@@ -304,8 +304,8 @@ class Ordbok
   def pluralize(entry, count)
     # If count is 0 and a phrase for the count 0 is specified, use it regardless
     # of pluralization rules.
-    # Eben in languages where zero isn't different strictly grammatically, it is
-    # practical with the ability to assign a separate phrase, e.g.
+    # Even in languages where zero isn't different strictly grammatically, it is
+    # practical to have the ability to assign a separate phrase, e.g.
     # "You have no new messages", rather than "You have 0 new messages".
     return entry[:zero] if count.zero? && entry[:zero]
 
