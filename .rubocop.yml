@@ -10,6 +10,11 @@ AllCops:
     - 'tests/**/*'
     - 'tools/**/*'
 
+# Allow higher AbcSize than what is the default to prevent having too many
+# tiny methods just for assigning variables to objects.
+Metrics/AbcSize:
+  Max: 20
+
 # Short lines are in general good for readability but splitting up one
 # expression into multiple lines can be less readable. Aim for 80 chars but
 # allow 120.

@@ -42,7 +42,7 @@ class Ordbok
   #
   # @raise [LoadError] if no lang files exists in resource_dir.
   def initialize(opts = {})
-    @caller_path = caller_locations.first.path
+    @caller_path = caller_locations(1..1).first.path
     @resource_dir = opts.fetch(:resource_dir, default_resource_dir)
     raise LoadError, "No .lang files found in #{@resource_dir}." if available_langs.empty?
     @remember_lang = opts.fetch(:remember_lang, false)
