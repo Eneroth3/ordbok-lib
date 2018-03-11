@@ -95,7 +95,7 @@ class Ordbok
     # TODO: Should lang == nil reset to SU lang and save as nil?
 
     unless lang_available?(lang)
-      raise ArgumentError, "Language unavailable does file exist? #{lang_path(lang)}"
+      raise ArgumentError, "Language unavailable. Does file exist? #{lang_path(lang)}"
     end
 
     @lang = lang.to_sym
@@ -235,7 +235,7 @@ class Ordbok
 
   # Generate a key by witch to save language preference.
   # Based on parent module names, e.g. Eneroth::AwesomeExtension ->
-  # :Eneroth_AeseomeExtension_Orbok.
+  # "Eneroth_AweseomeExtension_Orbok".
   #
   # @return [Symbol]
   def default_pref_key
