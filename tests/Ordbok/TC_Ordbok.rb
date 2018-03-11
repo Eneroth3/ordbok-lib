@@ -141,6 +141,10 @@ class TC_Ordbok < TestUp::TestCase
     assert_raises(ArgumentError) do
       ob.lang = :no
     end
+
+    ob.lang = nil
+    assert_equal(nil, ob.lang_pref)
+    refute_equal(nil, ob.lang)
   end
 
   def lang_available_Query

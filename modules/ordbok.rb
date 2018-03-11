@@ -7,10 +7,10 @@ module OrdbokLib
 # Ordbok localization library for SketchUp extensions.
 #
 # @example
-#   # In extension-dir/resources/en-US.lang
+#   # 'extension-dir/resources/en-US.lang'
 #   # {"greeting":"Hello World!"}
 #
-#   # In your extensions main file:
+#   # 'extension-dir/main.rb'
 #   require "extension-dir/ordbok"
 #   OB = Ordbok.new
 #   OB[:greeting]
@@ -38,19 +38,26 @@ class Ordbok
   #
   # @raise [LoadError] if no lang files exists in resource_dir.
   def initialize(lang: nil, resource_dir: nil, remember_lang: false, pref_key: nil)
-    @caller_path = caller_locations(1..1).first.path
+    @caller_path  = caller_locations(1..1).first.path
     @resource_dir = resource_dir || default_resource_dir
     raise LoadError, "No .lang files found in #{@resource_dir}." if available_langs.empty?
     @remember_lang = remember_lang
-    @pref_key = pref_key || default_pref_key
-
-    try_set_lang(lang_load_queue(lang && lang.to_sym))
+    @pref_key      = pref_key || default_pref_key
+    @lang_pref     = lang && lang.to_sym
+    try_load_langs
   end
 
   # Returns the code of the currently used language.
   #
   # @return [Symbol]
   attr_reader :lang
+
+  # Returns the code of the current lang preference.
+  # If no language has been explicitly chosen, nil is returned.
+  # Use lang to get the code of the actually used language.
+  #
+  # @return [Symbol]
+  attr_reader :lang_pref
 
   # @overload remember_lang
   #   Get whether the chosen language should be restored in next session.
@@ -88,16 +95,13 @@ class Ordbok
   #
   # @raise [ArgumentError] If the language is unavailable.
   def lang=(lang)
-    # TODO: Should lang == nil reset to SU lang and save as nil?
-
-    unless lang_available?(lang)
+    if lang && !lang_available?(lang)
       raise ArgumentError, "Language unavailable. Does file exist? #{lang_path(lang)}"
     end
 
-    @lang = lang.to_sym
-    load_lang_file
-
-    save_lang(lang.to_sym) if @remember_lang
+    @lang_pref = lang && lang.to_sym
+    try_load_langs
+    save_lang(@lang_pref) if @remember_lang
   end
 
   # Check if a specific language is available.
@@ -201,13 +205,12 @@ class Ordbok
   private
 
   # List of languages to to try loading, in the order they should be tried.
+  # Note that this list can contain languages that aren't available.
   #
-  # @param lang [Symbol, nil] Optional language to try first.
-  #
-  # @return [Array]
-  def lang_load_queue(lang = nil)
+  # @return [Array<Symbol>]
+  def lang_load_queue
     [
-      lang,
+      @lang_pref,
       @remember_lang ? saved_lang : nil,
       Sketchup.os_language.to_sym,
       :"en-US",
@@ -330,15 +333,11 @@ class Ordbok
     lang && lang.to_sym
   end
 
-  # Try setting the language.
+  # Try loading languages from load queue.
   #
-  # @param langs [Array<Symbol>, Symbol]
-  #
-  # @return [Symbol, nil] lang code on success.
-  def try_set_lang(langs)
-    langs = [langs] unless langs.is_a?(Array)
-
-    langs.each do |lang|
+  # @return [Symbol, nil] Lang code of loaded language on success.
+  def try_load_langs
+    lang_load_queue.each do |lang|
       next unless lang_available?(lang)
       @lang = lang
       load_lang_file
