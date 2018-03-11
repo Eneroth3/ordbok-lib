@@ -25,30 +25,26 @@ class Ordbok
   # @example
   #   OB = Ordbok.new
   #
-  # @param opts [Hash] Options for Ordbok object.
-  # @option opts :resource_dir [String] Absolute path to directory containing
-  #   language files (defaults to "resources", relative to where Ordbok.new is
-  #   called).
-  # @option opts :remember_lang [Boolean] Save language set by #lang= and use
-  #   same language next time an Ordbok object is created with the same
-  #   pref_key (defaults to false).
-  # @option opts :pref_key [Symbol] Key to save language setting to, if
-  #   remember_lang is true (defaults to unique key for each extension, based on
-  #   parent module names).
-  # @option opts :lang [Symbol] The language to use
-  #   (defaults to saved preference from previous session (if any and
-  #   remember_lang is true), what the current SketchUp session uses, en-US,
-  #   or whatever language is found, in this order).
+  # @param lang [Symbol, nil] The language to use.
+  #   When nil, Ordbok fall backs to language from last session
+  #   (if remember_lang is true and a value can be found), SketchUp's language,
+  #   en-US, or whatever language can be found.
+  # @param resource_dir [String, nil] Absolute path to directory containing
+  #   language files.
+  #   When nil, "resources" relative to where Ordbok.new is called is used.
+  # @param remember_lang [Boolean] Save language preference betweens sessions.
+  # @param pref_key [Symbol, nil] Key to save language setting to.
+  #   When nil, a key based on the Extension's module is used.
   #
   # @raise [LoadError] if no lang files exists in resource_dir.
-  def initialize(opts = {})
+  def initialize(lang: nil, resource_dir: nil, remember_lang: false, pref_key: nil)
     @caller_path = caller_locations(1..1).first.path
-    @resource_dir = opts.fetch(:resource_dir, default_resource_dir)
+    @resource_dir = resource_dir || default_resource_dir
     raise LoadError, "No .lang files found in #{@resource_dir}." if available_langs.empty?
-    @remember_lang = opts.fetch(:remember_lang, false)
-    @pref_key = opts.fetch(:pref_key, default_pref_key)
+    @remember_lang = remember_lang
+    @pref_key = pref_key || default_pref_key
 
-    try_set_lang(lang_load_queue(opts[:lang] && opts[:lang].to_sym))
+    try_set_lang(lang_load_queue(lang && lang.to_sym))
   end
 
   # Returns the code of the currently used language.
@@ -101,7 +97,7 @@ class Ordbok
     @lang = lang.to_sym
     load_lang_file
 
-    Sketchup.write_default(@pref_key.to_s, "lang", @lang.to_s) if @remember_lang
+    save_lang(lang.to_sym) if @remember_lang
   end
 
   # Check if a specific language is available.
@@ -312,6 +308,17 @@ class Ordbok
     return entry[:one] if count == 1 && entry[:one]
 
     entry[:other]
+  end
+
+  # Save language preference
+  #
+  # @param lang [Symbol]
+  #
+  # @return [Void]
+  def save_lang(lang)
+    Sketchup.write_default(@pref_key.to_s, "lang", lang.to_s)
+
+    nil
   end
 
   # Return saved language preference, or nil if there is none.
