@@ -55,7 +55,13 @@ module OrdbokExample
   menu.add_item(OB[:greeting]) { hello_world }
 
   # Optional language selector.
-  OB.lang_menu(menu.add_submenu("Language"))
+  # Submenu name is itself localized (but wont be updated until SU is
+  # restarted).
+  OB.lang_menu(
+    menu.add_submenu(OB[:lang_option]),
+    true,
+    OB[:system_lang_name]
+  )
 
 end
 end

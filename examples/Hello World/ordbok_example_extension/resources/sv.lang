@@ -1,1 +1,1 @@
-{"greeting":"Hej Världen!","interpolate":"Interpolera textsträng här: %{string}.","message_notification":{"zero":"Du ahr inga nya meddelanden.","one":"Du har %{count} nytt meddelande.","other":"Du har %{count} nya meddelanden."}}
+{"greeting":"Hej Världen!","lang_option":"Språk","system_lang_name":"Systemstandard","interpolate":"Interpolera textsträng här: %{string}.","message_notification":{"zero":"Du har inga nya meddelanden.","one":"Du har %{count} nytt meddelande.","other":"Du har %{count} nya meddelanden."}}
