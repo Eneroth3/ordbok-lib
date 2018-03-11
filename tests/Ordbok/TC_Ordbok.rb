@@ -204,13 +204,4 @@ class TC_Ordbok < TestUp::TestCase
     )
   end
 
-  def test_options_menu
-    dir = "#{__dir__}/TC_Ordbok/Swedish-Danish-English"
-    ob = Ordbok.new(resource_dir: dir, remember_lang: true)
-
-    menu = UI.menu("Plugins").add_submenu("Ordbok Test").add_submenu("Language")
-    ob.options_menu(menu)
-
-    skip("Can't automate checking whether menu appeared (Extensions > Ordbok Test > Language).")
-  end
 end

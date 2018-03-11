@@ -43,7 +43,7 @@ class Ordbok
     raise LoadError, "No .lang files found in #{@resource_dir}." if available_langs.empty?
     @remember_lang = remember_lang
     @pref_key      = pref_key || default_pref_key
-    @lang_pref     = lang && lang.to_sym
+    @lang_pref     = (lang && lang.to_sym) || (remember_lang && saved_lang) || nil
     try_load_langs
   end
 
@@ -176,32 +176,6 @@ class Ordbok
     end
   end
 
-  # Create menu items for use to select language.
-  #
-  # @param men [Sketchup::Menu]
-  #
-  # @example
-  #   OB = Ordbok.new(remember_lang: true)
-  #   menu = UI.menu("Plugins").add_submenu("My Extension").add_submenu("Language")
-  #   OB.options_menu(menu)
-  #
-  # @return [Void]
-  def options_menu(menu)
-    # TODO: Have item for default language (SketchUp Language) followed by a
-    # separator.
-    # Should ideally call lang= with nil as argument, and have that erase the
-    # saved lang option.
-
-    available_langs.sort.each do |lang|
-      # TODO: Perhaps use language name set in language file, or localize Ordbok
-      # itself with language names, rather than use ISO codes?
-      item = menu.add_item(lang.to_s) { self.lang = lang }
-      menu.set_validation_proc(item) { self.lang == lang ? MF_CHECKED : MF_UNCHECKED }
-    end
-
-    nil
-  end
-
   private
 
   # List of languages to to try loading, in the order they should be tried.
@@ -315,11 +289,12 @@ class Ordbok
 
   # Save language preference
   #
-  # @param lang [Symbol]
+  # @param lang [Symbol, nil]
   #
   # @return [Void]
   def save_lang(lang)
-    Sketchup.write_default(@pref_key.to_s, "lang", lang.to_s)
+    v = lang ? lang.to_s : nil
+    Sketchup.write_default(@pref_key.to_s, "lang", v)
 
     nil
   end
@@ -329,7 +304,6 @@ class Ordbok
   # @return [Symbol, nil]
   def saved_lang
     lang = Sketchup.read_default(@pref_key.to_s, "lang")
-
     lang && lang.to_sym
   end
 
