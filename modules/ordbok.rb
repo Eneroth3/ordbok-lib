@@ -78,12 +78,12 @@ class Ordbok
   #
   # @return [Array<Symbol>]
   def available_langs
-    pattern = "#{@resource_dir.tr("\\", "/")}/*.lang"
+    pattern = "#{@resource_dir.tr('\\', '/')}/*.lang"
     Dir.glob(pattern).map { |p| File.basename(p, ".*").to_sym }
   end
 
   def inspect
-    "#<#{self.class.name}:#{self.object_id} (#{lang})>"
+    "#<#{self.class.name}:#{object_id} (#{lang})>"
   end
 
   # Set language.
@@ -210,20 +210,13 @@ class Ordbok
   #
   # @return [Array]
   def lang_load_queue(lang = nil)
-    queue = [
+    [
+      lang,
+      @remember_lang ? saved_lang : nil,
       Sketchup.os_language.to_sym,
       :"en-US",
       available_langs.first
-    ]
-
-    if @remember_lang
-      remembered_lang = Sketchup.read_default(@pref_key.to_s, "lang")
-      queue.unshift(remembered_lang.to_sym) if remembered_lang
-    end
-
-    queue.unshift(lang) if lang
-
-    queue
+    ].compact
   end
 
   # Default directory to look for translations in.
@@ -319,6 +312,15 @@ class Ordbok
     return entry[:one] if count == 1 && entry[:one]
 
     entry[:other]
+  end
+
+  # Return saved language preference, or nil if there is none.
+  #
+  # @return [Symbol, nil]
+  def saved_lang
+    lang = Sketchup.read_default(@pref_key.to_s, "lang")
+
+    lang && lang.to_sym
   end
 
   # Try setting the language.
