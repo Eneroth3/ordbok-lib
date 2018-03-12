@@ -59,8 +59,8 @@ module OrdbokExample
   # restarted).
   OB.lang_menu(
     menu.add_submenu(OB[:lang_option]),
-    true,
-    OB[:system_lang_name]
+    offer_system_lang: true,
+    system_lang_name: OB[:system_lang_name]
   )
 
 end
