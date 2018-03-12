@@ -29,23 +29,23 @@ class TC_Ordbok < TestUp::TestCase
     # Should fall back to whatever language exists, but primarily English.
 
     dir = "#{__dir__}/TC_Ordbok/English-only"
-    ob = Ordbok.new(resource_dir: dir)
+    ob = Ordbok.new(resource_dir: dir, remember_lang: false)
     assert_equal(:"en-US", ob.lang)
 
     dir = "#{__dir__}/TC_Ordbok/Swedish-only"
-    ob = Ordbok.new(resource_dir: dir)
+    ob = Ordbok.new(resource_dir: dir, remember_lang: false)
     assert_equal(:sv, ob.lang)
 
     su_lang = Sketchup.os_language.to_sym
 
     dir = "#{__dir__}/TC_Ordbok/Swedish-English"
-    ob = Ordbok.new(resource_dir: dir)
+    ob = Ordbok.new(resource_dir: dir, remember_lang: false)
     expected = (su_lang == :sv && :sv || :"en-US")
     assert_equal(expected, ob.lang)
 
     dir = "#{__dir__}/TC_Ordbok/Swedish-Danish-English"
-    ob = Ordbok.new(resource_dir: dir)
-    expected = (su_lang == :sv && :sv || su_lang == :da && :da|| :"en-US")
+    ob = Ordbok.new(resource_dir: dir, remember_lang: false)
+    expected = (su_lang == :sv && :sv || su_lang == :da && :da || :"en-US")
     assert_equal(expected, ob.lang)
   end
 
@@ -77,34 +77,34 @@ class TC_Ordbok < TestUp::TestCase
     dir = "#{__dir__}/TC_Ordbok/Swedish-Danish-English"
     su_lang = Sketchup.os_language.to_sym
 
-    ob = Ordbok.new(resource_dir: dir, remember_lang: true)
+    ob = Ordbok.new(resource_dir: dir)
     # No reason to test language here. Depends on last test, if any, or SU
     # language.
 
     ob.lang = :sv
-    ob = Ordbok.new(resource_dir: dir, remember_lang: true)
+    ob = Ordbok.new(resource_dir: dir)
     assert_equal(:sv, ob.lang)
 
     ob.lang = :da
-    ob = Ordbok.new(resource_dir: dir, remember_lang: true)
+    ob = Ordbok.new(resource_dir: dir)
     assert_equal(:da, ob.lang)
 
-    # When remember_lang isn't specified as true, the language from last session
+    # When remember_lang is specified as false, the language from last session
     # should not be restored.
     # (Assume SketchUp isn't running in Danish here)
-    ob = Ordbok.new(resource_dir: dir)
+    ob = Ordbok.new(resource_dir: dir, remember_lang: false)
     expected = (su_lang == :sv && :sv || su_lang == :da && :da|| :"en-US")
     assert_equal(expected, ob.lang)
 
     # Different extensions should not interfere with each others.
 
-    ob1 = Ordbok.new(resource_dir: dir, remember_lang: true, pref_key: :ordbok_test1)
+    ob1 = Ordbok.new(resource_dir: dir, pref_key: :ordbok_test1)
     ob2 = Ordbok.new(resource_dir: dir, remember_lang: true, pref_key: :ordbok_test2)
     ob1.lang = :da
     ob2.lang = :sv
 
-    ob1 = Ordbok.new(resource_dir: dir, remember_lang: true, pref_key: :ordbok_test1)
-    ob2 = Ordbok.new(resource_dir: dir, remember_lang: true, pref_key: :ordbok_test2)
+    ob1 = Ordbok.new(resource_dir: dir, pref_key: :ordbok_test1)
+    ob2 = Ordbok.new(resource_dir: dir, pref_key: :ordbok_test2)
     assert_equal(:da, ob1.lang)
     assert_equal(:sv, ob2.lang)
 

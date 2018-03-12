@@ -37,7 +37,7 @@ class Ordbok
   #   When nil, a key based on the Extension's module is used.
   #
   # @raise [LoadError] if no lang files exists in resource_dir.
-  def initialize(lang: nil, resource_dir: nil, remember_lang: false, pref_key: nil)
+  def initialize(lang: nil, resource_dir: nil, remember_lang: true, pref_key: nil)
     @caller_path  = caller_locations(1..1).first.path
     @resource_dir = resource_dir || default_resource_dir
     raise LoadError, "No .lang files found in #{@resource_dir}." if available_langs.empty?
