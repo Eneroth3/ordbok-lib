@@ -23,7 +23,7 @@ module OrdbokExample
   # Set remember_lang to true and add a language selector menu to let the user
   # switch language themselves for this extension, and remember it between
   # sessions.
-  OB = Ordbok.new(remember_lang: true)
+  OB = Ordbok.new
 
   # Business code below...
 
@@ -59,7 +59,6 @@ module OrdbokExample
   # restarted).
   OB.lang_menu(
     menu.add_submenu(OB[:lang_option]),
-    offer_system_lang: true,
     system_lang_name: OB[:system_lang_name]
   )
 
