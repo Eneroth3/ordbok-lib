@@ -53,8 +53,7 @@ module PluralizationRules
     end
   end
 
-  # Determine pluralization category according to `polish` rule
-  # (Used in Polish).
+  # Determine pluralization category according to `polish` rule.
   #
   # @param count [Numeric]
   #
@@ -74,8 +73,7 @@ module PluralizationRules
     end
   end
 
-  # Determine pluralization category according to `welsh` rule
-  # (Used in Polish).
+  # Determine pluralization category according to `welsh` rule.
   #
   # @param count [Numeric]
   #
