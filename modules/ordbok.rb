@@ -1,4 +1,5 @@
 require "json"
+require "modules/pluralization_rules.rb" # On install, change directory.
 
 # Wrapping module. On install to your own extension, replace this with the
 # namespace of the extension.
@@ -252,7 +253,9 @@ class Ordbok
   # @return [Void]
   def load_lang_file
     file_content = File.read(lang_path)
-    @dictionary = JSON.parse(file_content, symbolize_names: true)[:dictionary]
+    parsed_json = JSON.parse(file_content, symbolize_names: true)
+    @dictionary = parsed_json[:dictionary]
+    @pluralization_rule = parsed_json[:pluralization_rule]
 
     nil
   end
@@ -295,16 +298,10 @@ class Ordbok
     # "You have no new messages", rather than "You have 0 new messages".
     return entry[:zero] if count.zero? && entry[:zero]
 
-    # TODO: These rules differs between languages. For now only English and
-    # languages with identical pluralization are fully supported.
-    #
-    # Other rules could perhaps be specified inside the lang files?
-    #
-    # Pluralization specification for various languages:
-    # http://www.unicode.org/cldr/charts/29/supplemental/language_plural_rules.html
-    return entry[:one] if count == 1 && entry[:one]
+    rule = @pluralization_rule || "one_other"
+    category = PluralizationRules.send(rule, count)
 
-    entry[:other]
+    entry[category] || entry[:other]
   end
 
   # Save language preference

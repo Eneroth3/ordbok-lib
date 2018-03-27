@@ -211,4 +211,16 @@ class TC_Ordbok < TestUp::TestCase
     )
   end
 
+  def test_Operator_Get_special_pluralization
+    dir = "#{__dir__}/TC_Ordbok/Pluralization"
+    ob = Ordbok.new(resource_dir: dir, lang: :ru)
+    assert_equal("1 день",   ob[:day_count, count: 1])
+    assert_equal("2 дня",    ob[:day_count, count: 2])
+    assert_equal("4 дня",    ob[:day_count, count: 4])
+    assert_equal("5 дней",   ob[:day_count, count: 5])
+    assert_equal("12 дней",  ob[:day_count, count: 12])
+    assert_equal("101 день", ob[:day_count, count: 101])
+    assert_equal("102 дня",  ob[:day_count, count: 102])
+  end
+
 end
