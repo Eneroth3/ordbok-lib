@@ -10,8 +10,8 @@ class Ordbok
   # @param offer_system_lang [Boolean] Whether to include "System Default" as an
   #   option for picking language based on SU language.
   # @param system_lang_name [String] What to call menu item for system language.
-  #   Note that this isn't the name of the any language itself but the phrase
-  #   denoting to language is explicitly picked.
+  #   Note that this isn't the name of any language itself but the phrase
+  #   denoting no language is explicitly picked.
   #
   # @example
   #   OB = Ordbok.new(remember_lang: true)
@@ -26,14 +26,12 @@ class Ordbok
       menu.add_separator
     end
 
-    available_langs.sort.each do |lang|
-      # TODO: Perhaps use full language name (and set it in language file)
-      # rather than use ISO codes?
-      item = menu.add_item(lang.to_s) { self.lang = lang }
+    available_lang_names.sort.each do |code, name|
+      item = menu.add_item(name) { self.lang = code }
       if offer_system_lang
-        menu.set_validation_proc(item) { lang_pref == lang ? MF_CHECKED : MF_UNCHECKED }
+        menu.set_validation_proc(item) { lang_pref == code ? MF_CHECKED : MF_UNCHECKED }
       else
-        menu.set_validation_proc(item) { self.lang == lang ? MF_CHECKED : MF_UNCHECKED }
+        menu.set_validation_proc(item) { self.lang == code ? MF_CHECKED : MF_UNCHECKED }
       end
     end
 
