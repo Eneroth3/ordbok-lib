@@ -1,14 +1,13 @@
 require "sketchup"
 
 # In a real life extension Ordbok is loaded from within the extension's support
-# directory, something like this (assuming PLUGIN_DIR is the path to the
-# extension support directory).
-### Sketchup.require(File.join(PLUGIN_DIR, "ordbok")
-### Sketchup.require(File.join(PLUGIN_DIR, "lang_menu")
-
-# In this example we know Ordbok is located 3 steps up and in modules/.
-require_relative "../../../modules/ordbok.rb"
-require_relative "../../../modules/lang_menu.rb"
+# directory, something like this:
+### Sketchup.require("my_extension/vendor/ordbok/ordbok")
+### Sketchup.require("my_extension/vendor/ordbok/lang_menu")
+#
+# In this example, inside of the ordbok repository, we load all Ordbok classes
+# and add the ordbok source directory to $LOAD_PATH by loading the loader file.
+require_relative "../../../tools/loader.rb"
 
 # In a real life extension there is no third wrapping module, outside Author and
 # Extension modules.

@@ -1,3 +1,5 @@
+require "modules/ordbok.rb" # On install, change directory.
+
 # Wrapping module. On install to your own extension, replace this with the
 # namespace of the extension.
 module OrdbokLib

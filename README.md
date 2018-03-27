@@ -37,15 +37,16 @@ LangHandler, are:
 
 ## Install
 
-1. Copy files from ``modules/`` into your extension's directory.
-2. Replace the wrapping ``OrdbolLib`` module with the wrapping module of your
+1. Copy files from `modules/` into your extension's directory.
+2. Replace the wrapping `OrdbolLib` module with the wrapping module of your
 extension.
-3. Require the script(s) from your own extension.
+3. Update require statements to refer to the files in your extension.
+4. Require the script(s) from your own extension.
 
 ## Usage
 
 See class and method [documentation for Ordbok](http://www.rubydoc.info/github/Eneroth3/ordbok/), or the [Example Extension](examples/Hello%20World/).
 
-## Resource file specification
+### Resource file specification
 
 [Resource file specification](lang_specification.md)
