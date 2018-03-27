@@ -1,1 +1,1 @@
-{"greeting":"Hej Verden!","interpolate":"Interpolér Tekststreng her: %{string}.","message_notification":{"zero":"Du har ingen nye beskeder.","one":"Du har 1 ny besked.","other":"Du har %{count} nya beskeder."}}
+{"name":{"native":"Dansk"},"dictionary":{"greeting":"Hej Verden!","interpolate":"Interpolér Tekststreng her: %{string}.","message_notification":{"zero":"Du har ingen nye beskeder.","one":"Du har 1 ny besked.","other":"Du har %{count} nya beskeder."}}}

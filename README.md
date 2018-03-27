@@ -46,5 +46,6 @@ extension.
 
 See class and method [documentation for Ordbok](http://www.rubydoc.info/github/Eneroth3/ordbok/), or the [Example Extension](examples/Hello%20World/).
 
-TODO: Document how translation tables are saved (for now as JSON files, but that
-could change).
+## Resource file specification
+
+[Resource file specification](lang_specification.md)

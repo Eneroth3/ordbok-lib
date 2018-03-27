@@ -85,6 +85,15 @@ class Ordbok
     Dir.glob(pattern).map { |p| File.basename(p, ".*").to_sym }
   end
 
+  # List names of available languages in the resources directory indexed by
+  # their code.
+  #
+  # @return [Hash{Symbol => String}]
+  def available_lang_names
+    # To #to_h method in SU2014.
+    Hash[available_langs.map { |l| [l, lang_name(l)] }]
+  end
+
   def inspect
     "#<#{self.class.name}:#{object_id} (#{lang})>"
   end
@@ -192,6 +201,17 @@ class Ordbok
     ].compact
   end
 
+  # Get name of available language from lang code.
+  #
+  # @param lang [Symbol]
+  #
+  # @return [String]
+  def lang_name(lang)
+    file_content = File.read(lang_path(lang))
+
+    JSON.parse(file_content, symbolize_names: true)[:name][:native]
+  end
+
   # Default directory to look for translations in.
   #
   # @return [String]
@@ -232,7 +252,7 @@ class Ordbok
   # @return [Void]
   def load_lang_file
     file_content = File.read(lang_path)
-    @dictionary = JSON.parse(file_content, symbolize_names: true)
+    @dictionary = JSON.parse(file_content, symbolize_names: true)[:dictionary]
 
     nil
   end

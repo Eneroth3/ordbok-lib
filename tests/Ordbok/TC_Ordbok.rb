@@ -128,6 +128,13 @@ class TC_Ordbok < TestUp::TestCase
     assert_equal([:da, :"en-US", :sv], ob.available_langs.sort)
   end
 
+  def test_available_lang_names
+    dir = "#{__dir__}/TC_Ordbok/Swedish-Danish-English"
+    ob = Ordbok.new(resource_dir: dir)
+    expected = {:sv=>"Svenska", :"en-US"=>"English", :da=>"Dansk"}
+    assert_equal(expected, ob.available_lang_names)
+  end
+
   def test_lang_Set
     dir = "#{__dir__}/TC_Ordbok/Swedish-Danish-English"
     ob = Ordbok.new(resource_dir: dir)

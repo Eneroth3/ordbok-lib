@@ -1,1 +1,1 @@
-{"greeting":"Hello World!","lang_option":"Language","system_lang_name":"System Default","interpolate":"Interpolate string here: %{string}.","message_notification":{"zero":"You have no new messages.","one":"You have %{count} new message.","other":"You have %{count} new messages."}}
+{"name":{"native":"English"},"dictionary":{"greeting":"Hello World!","lang_option":"Language","system_lang_name":"System Default"}}
