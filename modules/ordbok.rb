@@ -1,5 +1,5 @@
 require "json"
-require "modules/pluralization_rules" # On install, change directory.
+Sketchup.require "modules/pluralization_rules" # On install, change directory.
 
 # Wrapping module. On install to your own extension, replace this with the
 # namespace of the extension.
