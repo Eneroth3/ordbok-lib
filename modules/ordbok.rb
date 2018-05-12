@@ -110,8 +110,8 @@ class Ordbok
     end
 
     @lang_pref = lang && lang.to_sym
-    try_load_langs
     save_lang(@lang_pref) if @remember_lang
+    try_load_langs
   end
 
   # Check if a specific language is available.
