@@ -7,6 +7,9 @@ module OrdbokLib
 
 # Ordbok localization library for SketchUp extensions.
 #
+# @note Period (.) is an illegal character in individual keys, as it is used as
+#   delimiter for nested keys.
+#
 # @example
 #   # 'extension-dir/resources/en-US.lang'
 #   # {"greeting":"Hello World!"}
@@ -128,7 +131,7 @@ class Ordbok
   # Formats string according to additional parameters, if any.
   # If key is missing, warn and return stringified key.
   #
-  # @param key [Symbol]
+  # @param key [Symbol, String]
   # @param opts [Hash] Interpolation options. See Kernel.format for details.
   # @option opts :count [Numeric] The count keyword is not only interpolated to
   #   the string, but also used to select nested entry based on pluralization,
@@ -151,7 +154,8 @@ class Ordbok
   #   # => "Interpolate string here: Hello World!."
   #
   #   # Keys can be nested, defining groups of related messages.
-  #   # For nested nested keys, use String with period as separator.
+  #   # For nested nested keys, use String with period as delimiter.
+  #   # Note that "." is an illegal character within individual keys!
   #   OB["message_notification.zero"]
   #   # => "You have no new messages."
   #
