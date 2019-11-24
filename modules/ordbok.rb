@@ -48,7 +48,7 @@ class Ordbok
     @remember_lang = remember_lang
     @pref_key      = pref_key || default_pref_key
     @lang_pref     = (lang && lang.to_sym) || (remember_lang && saved_lang) || nil
-    try_load_langs
+    load_language
   end
 
   # Returns the code of the currently used language.
@@ -94,7 +94,7 @@ class Ordbok
   #
   # @return [Hash{Symbol => String}]
   def available_lang_names
-    # To #to_h method in SU2014.
+    # No #to_h method in SU2014.
     Hash[available_langs.map { |l| [l, lang_name(l)] }]
   end
 
@@ -114,7 +114,7 @@ class Ordbok
 
     @lang_pref = lang && lang.to_sym
     save_lang(@lang_pref) if @remember_lang
-    try_load_langs
+    load_language
   end
 
   # Check if a specific language is available.
@@ -196,7 +196,7 @@ class Ordbok
   # Note that this list can contain languages that aren't available.
   #
   # @return [Array<Symbol>]
-  def lang_load_queue
+  def load_order
     [
       @lang_pref,
       @remember_lang ? saved_lang : nil,
@@ -328,11 +328,11 @@ class Ordbok
     lang && lang.to_sym
   end
 
-  # Try loading languages from load queue.
+  # Load language, based on load_order.
   #
   # @return [Symbol, nil] Lang code of loaded language on success.
-  def try_load_langs
-    lang_load_queue.each do |lang|
+  def load_language
+    load_order.each do |lang|
       next unless lang_available?(lang)
       @lang = lang
       load_lang_file
