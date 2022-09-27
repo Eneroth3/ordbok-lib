@@ -6,10 +6,9 @@ localization of SketchUp extensions.
 Due to the architecture of SketchUp extensions this library is designed
 differently than libraries not meant for SketchUp, e.g. rails/l18n.
 As numerous SketchUp extensions run in the same environment, outside of the
-developer's control, all code used by an extension (with some exceptions like the
-Standard Lib) are supposed to be defined inside the namespace (wrapping module)
-of that extension, and be loaded from within that extension's own support
-directory.
+developer's control, all code used by an extension are supposed to be
+defined inside the namespace (wrapping module) of that extension, and be
+loaded from within that extension's own support directory.
 
 Some features/concepts that makes Ordbok different from other SketchUp
 extension localization libraries, such as TT_Lib2's Babelfish or the shipped
